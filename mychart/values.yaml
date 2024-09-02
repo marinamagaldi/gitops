@@ -1,0 +1,11 @@
+app:
+  image:
+    repository: docker.io/marinamagaldib/fastapi-app
+    tag:
+  replicas: 2
+  containerPort: 8000
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
