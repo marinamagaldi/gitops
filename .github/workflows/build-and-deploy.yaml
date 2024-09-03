@@ -22,7 +22,6 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -f dockerfile-repo/Dockerfile -t marinamagaldib/fastapi-app:${{ github.sha }} .
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -39,16 +38,13 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN_OPS }}
           path: gitops/mychart
 
-      - name: Set up Minikube Kubeconfig
+      - name: Set up Minikube Kubeconfig ##configuração para cluster rodando local
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.MINIKUBE_KUBECONFIG }}" > $HOME/.kube/config
-
       - name: Verify Kubernetes Context
         run: |
           kubectl config current-context
-          kubectl get nodes  # Verifique se os nós estão disponíveis
-
       - name: Atualizar tag
         run: |
           cd mychart
@@ -60,7 +56,6 @@ jobs:
         run: |
           cd mychart
           cat values.yaml
-
       - name: Commit e Push
         run: |
           cd mychart
@@ -70,9 +65,8 @@ jobs:
           git commit -m "update docker tag para: ${{ github.sha }}"
           git push
         env:
-          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_OPS }}  # Verifique se o token tem permissões de commit
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
 
       - name: Deploy to Kubernetes
         run: |
           helm upgrade --install my-release mychart --values mychart/values.yaml
-
