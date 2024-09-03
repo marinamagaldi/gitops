@@ -57,13 +57,15 @@ jobs:
           cd mychart
           cat values.yaml
       - name: Commit e Push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd mychart
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add values.yaml
           git commit -m "update docker tag para: ${{ github.sha }}"
-          GIT_TRACE=1 GIT_CURL_VERBOSE=1 git push origin main
+          git push origin main
         
       - name: Deploy to Kubernetes
         run: |
