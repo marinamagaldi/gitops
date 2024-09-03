@@ -19,11 +19,6 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN_FOR_OTHER_REPO }}
           path: dockerfile-repo
 
-      - name: Verificar arquivos no repositório Dockerfile
-        run: |
-          cd dockerfile-repo
-          ls -la
-
       - name: Build Docker image
         run: |
           docker build -f dockerfile-repo/Dockerfile -t marinamagaldib/fastapi-app:${{ github.sha }} .
@@ -37,31 +32,34 @@ jobs:
       - name: Push Docker image
         run: docker push marinamagaldib/fastapi-app:${{ github.sha }}
 
-      - name: Clonar repo do Helm Chart
+      - name: Checkout GitOps repo
         uses: actions/checkout@v3
         with:
           repository: marinamagaldi/gitops
           token: ${{ secrets.ACCESS_TOKEN_OPS }}
-          path: gitops
+          path: gitops/mychart
 
-      - name: Verificar arquivos no repositório Helm Chart
+      - name: Set up Minikube Kubeconfig ##configuração para cluster rodando local
         run: |
-          cd gitops/mychart
-          ls -la
+          echo "${{ secrets.MINIKUBE_KUBECONFIG }}" > $HOME/.kube/config
 
-      - name: Atualizar tag da imagem no values.yaml
+      - name: Verify Kubernetes Context
+        run: |
+          kubectl config current-context
+
+      - name: Atualizar tag
         run: |
           cd gitops/mychart
           sed -i "s|tag: .*|tag: ${GITHUB_SHA}|g" values.yaml
         env:
           GITHUB_SHA: ${{ github.sha }}
 
-      - name: Verificar conteúdo do values.yaml
+      - name: Verificar valores.yaml
         run: |
           cd gitops/mychart
           cat values.yaml
 
-      - name: Commit e Push das alterações
+      - name: Commit e Push
         run: |
           cd gitops/mychart
           git config user.name "GitHub Actions"
@@ -72,6 +70,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_OPS }}
 
-      - name: Deploy para Kubernetes
+      - name: Deploy to Kubernetes
         run: |
           helm upgrade --install my-release gitops/mychart --values gitops/mychart/values.yaml
