@@ -19,6 +19,11 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN_FOR_OTHER_REPO }}
           path: dockerfile-repo
 
+      - name: Verificar arquivos no repositório Dockerfile
+        run: |
+          cd dockerfile-repo
+          ls -la
+
       - name: Build Docker image
         run: |
           docker build -f dockerfile-repo/Dockerfile -t marinamagaldib/fastapi-app:${{ github.sha }} .
@@ -32,26 +37,31 @@ jobs:
       - name: Push Docker image
         run: docker push marinamagaldib/fastapi-app:${{ github.sha }}
 
-      - name: Clonar_repo
+      - name: Clonar repo do Helm Chart
         uses: actions/checkout@v3
         with:
           repository: marinamagaldi/gitops
           token: ${{ secrets.ACCESS_TOKEN_OPS }}
-          path: gitops/mychart
+          path: gitops
 
-      - name: Atualizar tag
+      - name: Verificar arquivos no repositório Helm Chart
+        run: |
+          cd gitops/mychart
+          ls -la
+
+      - name: Atualizar tag da imagem no values.yaml
         run: |
           cd gitops/mychart
           sed -i "s|tag: .*|tag: ${GITHUB_SHA}|g" values.yaml
         env:
           GITHUB_SHA: ${{ github.sha }}
 
-      - name: Verificar valores.yaml
+      - name: Verificar conteúdo do values.yaml
         run: |
           cd gitops/mychart
           cat values.yaml
 
-      - name: Commit e Push
+      - name: Commit e Push das alterações
         run: |
           cd gitops/mychart
           git config user.name "GitHub Actions"
@@ -62,6 +72,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_OPS }}
 
-      - name: Deploy to Kubernetes
+      - name: Deploy para Kubernetes
         run: |
-          helm upgrade --install my-release mychart --values mychart/values.yaml
+          helm upgrade --install my-release gitops/mychart --values gitops/mychart/values.yaml
