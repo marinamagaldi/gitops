@@ -23,7 +23,8 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker image
-        run: docker push marinamagaldib/fastapi-app:${{ github.sha }}
+        run: |
+          docker push marinamagaldib/fastapi-app:${{ github.sha }}
 
       - name: Clonar_repo
         uses: actions/checkout@v3
@@ -34,11 +35,11 @@ jobs:
 
       - name: Atualizar tag
         run: |
-            cd mychart
-            sed -i "s|tag: .*|tag: ${GITHUB_SHA}|g" values.yaml
-          env:
-            GITHUB_SHA: ${{ github.sha }}
-        
+          cd mychart
+          sed -i "s|tag: .*|tag: ${GITHUB_SHA}|g" values.yaml
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+
       - name: Verificar valores.yaml
         run: |
           cd mychart
