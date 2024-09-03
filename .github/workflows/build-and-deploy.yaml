@@ -73,4 +73,4 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          helm upgrade --install my-release gitops/mychart --values gitops/mychart/values.yaml
+          helm upgrade --install my-release mychart --values mychart/values.yaml
