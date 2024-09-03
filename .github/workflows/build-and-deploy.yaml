@@ -33,7 +33,7 @@ jobs:
           path: mychart
 
       - name: Atualizar tag
-          run: |
+        run: |
             cd mychart
             sed -i "s|tag: .*|tag: ${GITHUB_SHA}|g" values.yaml
           env:
