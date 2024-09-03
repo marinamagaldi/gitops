@@ -63,10 +63,8 @@ jobs:
           git config user.email "actions@github.com"
           git add values.yaml
           git commit -m "update docker tag para: ${{ github.sha }}"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+          GIT_TRACE=1 GIT_CURL_VERBOSE=1 git push origin main
+        
       - name: Deploy to Kubernetes
         run: |
           helm upgrade --install my-release mychart --values mychart/values.yaml
