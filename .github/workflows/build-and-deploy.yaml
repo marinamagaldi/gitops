@@ -41,6 +41,7 @@ jobs:
 
       - name: Set up Minikube Kubeconfig ##configuração para cluster rodando local
         run: |
+          mkdir -p $HOME/.kube
           echo "${{ secrets.MINIKUBE_KUBECONFIG }}" > $HOME/.kube/config
 
       - name: Verify Kubernetes Context
