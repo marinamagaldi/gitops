@@ -65,7 +65,7 @@ jobs:
           git commit -m "update docker tag para: ${{ github.sha }}"
           git push
         env:
-          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_OPS }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to Kubernetes
         run: |
