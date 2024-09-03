@@ -39,7 +39,7 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN_OPS }}
           path: gitops/mychart
 
-      - name: Set up Minikube Kubeconfig ##configuração para cluster rodando local
+      - name: Set up Minikube Kubeconfig
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.MINIKUBE_KUBECONFIG }}" > $HOME/.kube/config
@@ -47,6 +47,7 @@ jobs:
       - name: Verify Kubernetes Context
         run: |
           kubectl config current-context
+          kubectl get nodes  # Verifique se os nós estão disponíveis
 
       - name: Atualizar tag
         run: |
@@ -69,8 +70,9 @@ jobs:
           git commit -m "update docker tag para: ${{ github.sha }}"
           git push
         env:
-          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_OPS }}  # Verifique se o token tem permissões de commit
 
       - name: Deploy to Kubernetes
         run: |
           helm upgrade --install my-release mychart --values mychart/values.yaml
+
