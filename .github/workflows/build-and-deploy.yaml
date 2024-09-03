@@ -19,54 +19,37 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN_FOR_OTHER_REPO }}
           path: dockerfile-repo
 
-      - name: Build Docker image
-        run: |
-          docker build -f dockerfile-repo/Dockerfile -t marinamagaldib/fastapi-app:${{ github.sha }} .
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Push Docker image
-        run: docker push marinamagaldib/fastapi-app:${{ github.sha }}
-
-      - name: Checkout GitOps repo
-        uses: actions/checkout@v3
-        with:
-          repository: marinamagaldi/gitops
-          token: ${{ secrets.ACCESS_TOKEN_OPS }}
-          path: gitops/mychart
-
-      - name: Set up Minikube Kubeconfig ##configuração para cluster rodando local
+      - name: Set up Minikube Kubeconfig ## configuração para cluster rodando local
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.MINIKUBE_KUBECONFIG }}" > $HOME/.kube/config
+
       - name: Verify Kubernetes Context
         run: |
           kubectl config current-context
+
       - name: Atualizar tag
         run: |
           cd mychart
-          sed -i "s|tag: .*|tag: ${GITHUB_SHA}|g" values.yaml
+          pwd
+          ls -a
+          sed -i 's|image:.*|image: '${{ github.sha }}'|' values.yaml
         env:
-          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_OPS }}
 
       - name: Verificar valores.yaml
         run: |
           cd mychart
           cat values.yaml
+
       - name: Commit e Push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd mychart
-          git config --global user.name "GitHub Actions Bot"
+          pwd
+          git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add values.yaml
           git commit -m "update docker tag para: ${{ github.sha }}"
           git push origin main
-        
-      - name: Deploy to Kubernetes
-        run: |
-          helm upgrade --install my-release mychart --values mychart/values.yaml
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_OPS }}
