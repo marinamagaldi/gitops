@@ -37,23 +37,23 @@ jobs:
         with:
           repository: marinamagaldi/gitops
           token: ${{ secrets.ACCESS_TOKEN_OPS }}
-          path: mychart
+          path: gitops/mychart
 
       - name: Atualizar tag
         run: |
-          cd mychart
+          cd gitops/mychart
           sed -i "s|tag: .*|tag: ${GITHUB_SHA}|g" values.yaml
         env:
           GITHUB_SHA: ${{ github.sha }}
 
       - name: Verificar valores.yaml
         run: |
-          cd mychart
+          cd gitops/mychart
           cat values.yaml
 
       - name: Commit e Push
         run: |
-          cd mychart
+          cd gitops/mychart
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add values.yaml
