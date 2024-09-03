@@ -41,11 +41,11 @@ jobs:
 
       - name: Atualizar tag
         run: |
-            cd mychart
-            sed -i "s|tag: .*|tag: ${GITHUB_SHA}|g" values.yaml
-          env:
-            GITHUB_SHA: ${{ github.sha }}
-        
+          cd mychart
+          sed -i "s|tag: .*|tag: ${GITHUB_SHA}|g" values.yaml
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+
       - name: Verificar valores.yaml
         run: |
           cd mychart
