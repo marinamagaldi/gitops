@@ -57,12 +57,12 @@ jobs:
 
       - name: Verificar valores.yaml
         run: |
-          cd gitops/mychart
+          cd mychart
           cat values.yaml
 
       - name: Commit e Push
         run: |
-          cd gitops/mychart
+          cd mychart
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add values.yaml
