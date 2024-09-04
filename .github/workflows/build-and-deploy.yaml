@@ -42,20 +42,19 @@ jobs:
           cd mychart
           cat values.yaml
 
-      - name: Set up Git
+      - name: Commit e Push das alterações
         run: |
-          git config --global user.name "marinamagaldi"
-          git config --global user.email "marinamagaldib@hotmail.com"
-        
-      - name: Commit changes
-        run: |
+          cd mychart
+          pwd
+          ls -a
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
           git add values.yaml
-          git commit -m "update docker tag para: ${{ github.sha }}" || echo "No changes to commit"
-        
-      - name: Push changes
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.ACCESS_TOKEN_OPS }}
-          branch: main
-
-        
+          git commit -m "update docker tag para: ${{ github.sha }}"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_OPS }}
+  
+      - name: Deploy para Kubernetes
+        run: |
+          helm upgrade --install my-release gitops/mychart --values mychart/values.yaml
