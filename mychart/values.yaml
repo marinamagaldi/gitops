@@ -1,10 +1,10 @@
+---
 app:
-  image: 371663a17f27a55f8638f4024ca209029e72ffce
+  image:
     repository: docker.io/marinamagaldib/fastapi-app
-    tag: "latest"
+    tag: latest
   replicas: 2
   containerPort: 8000
-
 service:
   type: ClusterIP
   port: 80
