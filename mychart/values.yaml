@@ -1,10 +1,12 @@
 app:
-  image: 
+  image:
     repository: docker.io/marinamagaldib/fastapi-app
     tag: 3aa303834a27bccbfba556e838de206375b51111
   replicas: 2
   containerPort: 8000
+
 service:
-  type: ClusterIP
+  type: NodePort # Alterado de ClusterIP para NodePort
   port: 80
   targetPort: 8000
+  nodePort: 30080 # Adicionado para expor a porta externa
