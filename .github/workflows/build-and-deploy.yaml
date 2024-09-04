@@ -56,6 +56,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_OPS }}
   
-      - name: Deploy para Kubernetes
-        run: |
-          helm upgrade --install my-release gitops/mychart --values mychart/values.yaml
