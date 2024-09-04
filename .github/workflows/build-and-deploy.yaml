@@ -42,15 +42,20 @@ jobs:
           cd mychart
           cat values.yaml
 
-      - name: Commit e Push
+      - name: Set up Git
         run: |
-          cd mychart
-          pwd
           git config --global user.name "marinamagaldi"
           git config --global user.email "marinamagaldib@hotmail.com"
+        
+      - name: Commit changes
+        run: |
           git add values.yaml
-          git commit -m "update docker tag para: ${{ github.sha }}"
-          git remote set-url origin https://${{ secrets.ACCESS_TOKEN_OPS }}@github.com/marinamagaldi/gitops.git
-          git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_OPS }}
+          git commit -m "update docker tag para: ${{ github.sha }}" || echo "No changes to commit"
+        
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.ACCESS_TOKEN_OPS }}
+          branch: main
+
+        
