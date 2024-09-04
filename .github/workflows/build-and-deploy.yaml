@@ -50,6 +50,7 @@ jobs:
           git config --global user.email "marinamagaldib@hotmail.com"
           git add values.yaml
           git commit -m "update docker tag para: ${{ github.sha }}"
+          git remote set-url origin https://x-access-token:${{ secrets.ACCESS_TOKEN_OPS }}@github.com/marinamagaldi/${{ github.repository }}.git
           git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_OPS }}
