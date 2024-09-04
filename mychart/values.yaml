@@ -1,8 +1,7 @@
----
 app:
-  image: cea28b35e99eb602af1a62565e7bc805b35d0b65
+  image: 
     repository: docker.io/marinamagaldib/fastapi-app
-    tag: {{ github.sha }}
+    tag: "latest"
   replicas: 2
   containerPort: 8000
 service:
